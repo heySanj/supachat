@@ -1,33 +1,38 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
+import { useEffect, useState } from 'react'
 import './App.css'
+import supabase from './supabaseClient'
+import Chat from './components/Chat'
+import Login from './components/Login'
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [data, setData] = useState('Loading Data')
+
+  const getData = async () => {
+    const { data, error } = await supabase
+      .from('messages')
+      .select()
+
+    if (data) {
+      setData(data[0].text)
+    }
+
+    if (error) {
+      setData(error.message)
+    }
+
+  }
+
+  useEffect(() => {
+    getData()
+
+  }, [])
+
 
   return (
     <>
-      <div id="app">
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1 className="font-serif font-black text-7xl italic tracking-tight mb-4">Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+      <h1 className="font-serif font-black text-7xl italic tracking-tight mb-4">{data}</h1>
+      <Chat />
+      <Login />
     </>
   )
 }
