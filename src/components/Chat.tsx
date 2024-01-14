@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
 import supabase from "../supabaseClient";
 import { userStore } from "../store/store";
+import Message from "./Message";
+import { IMessage } from "../types/message";
 
 const Chat = () => {
   const [newMessage, setNewMessage] = useState("");
-  const [messages, setMessages] = useState<any[]>([]);
+  const [messages, setMessages] = useState<IMessage[]>([]);
 
   const { currentUser } = userStore();
 
@@ -28,12 +30,12 @@ const Chat = () => {
       .select(`*, users (*)`)
       .order("created_at")
       .limit(50);
+
     if (error) {
       throw new Error(error.message);
     }
     if (data) {
-      setMessages(data);
-      console.log(data)
+      setMessages(data as IMessage[]);
     }
   };
 
@@ -44,10 +46,27 @@ const Chat = () => {
       .on(
         "postgres_changes",
         { event: "*", schema: "public", table: "messages" },
-        (payload) => {
-          console.log("Change received!", payload);
+        async (payload) => {
           const { eventType } = payload;
-          if (eventType === "INSERT") setMessages((prev) => [...prev, payload.new]);
+          if (eventType === "INSERT") {
+            const newMessage: IMessage = payload.new as IMessage
+            // Need to get user details first before pusing the new message
+            const { data, error } = await supabase.from('users')
+              .select('*')
+              .eq('id', newMessage.user)
+              .limit(1)
+              .single()
+            if (!data || error) {
+              throw new Error(error.message)
+            } else {
+              newMessage.users = data
+            }
+            setMessages((prev) => [...prev, newMessage]);
+          }
+          if (eventType === 'DELETE') {
+            console.log("### DELETE", payload);
+            setMessages((prev) => prev.filter(message => message.id !== payload.old.id));
+          }
         }
       )
       .subscribe();
@@ -62,10 +81,9 @@ const Chat = () => {
 
   return (
     <>
-      <div>
-        The Chat Box!
+      <div className="messages px-4 rounded-xl border">
         {messages.map((message) => (
-          <p key={message.id}>{message.text} ~ by {message.users.userName}</p>
+          <Message message={message} key={message.id} />
         ))}
       </div>
       <div>

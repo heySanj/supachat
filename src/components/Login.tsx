@@ -71,7 +71,10 @@ const Login: React.FC = () => {
   const signUp = async () => {
     clearErrors();
     try {
-      const { data, error } = await supabase.auth.signUp({
+
+      // signUp will create a user entry in the auth schema which is secure
+      // and is more difficult to pull data from/edit
+      const { data, error: authError } = await supabase.auth.signUp({
         email,
         password,
         options: {
@@ -81,11 +84,20 @@ const Login: React.FC = () => {
         }
       });
 
-      if (error) {
-        throw error;
+      if (authError) {
+        throw authError;
       }
 
       console.log('User signed up:', data.user);
+
+      // Create an entry in the public schema.
+      const { error: userError } = await supabase.from('users').insert([
+        { id: data.user!.id, userName: username }
+      ]).select()
+
+      if (userError) {
+        throw userError;
+      }
 
       // Automatically login after signing up
       await login();
