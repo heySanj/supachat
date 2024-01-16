@@ -13,7 +13,7 @@ function App() {
   return (
     <MainWrapper
       ref={animationParent}
-      className="overflow-hidden h-[100vh] p-2 flex flex-col justify-between "
+      className="overflow-hidden h-screen p-2 flex flex-col justify-between "
     >
       <h1 className="font-serif font-black text-5xl italic tracking-tight pb-4 ">
         SupaChat

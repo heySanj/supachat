@@ -104,7 +104,7 @@ const Chat: React.FC<ChatProps> = ({ className }) => {
     <div className={className}>
       <ChatBox
         ref={animationParent}
-        className="messages px-4 rounded-xl border overflow-scroll no-scrollbar"
+        className="messages px-2 rounded-xl border overflow-scroll no-scrollbar"
       >
         {messages.map((message) => (
           <Message message={message} key={message.id} />
