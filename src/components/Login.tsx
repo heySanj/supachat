@@ -5,7 +5,11 @@ import { userStore } from "../store/store";
 
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 
-const Login: React.FC = () => {
+interface LoginProps {
+  className: string;
+}
+
+const Login: React.FC<LoginProps> = ({ className }) => {
   const [animationParent] = useAutoAnimate();
   const [username, setUsername] = useState<string>("");
   const [email, setEmail] = useState<string>("");
@@ -90,7 +94,7 @@ const Login: React.FC = () => {
   }, []);
 
   return (
-    <div>
+    <div className={className}>
       {currentUser ? (
         <p className="my-4">
           Signed in as <b>{currentUser.user.user_metadata.display_name}</b>

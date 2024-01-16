@@ -7,8 +7,13 @@ import styled from "styled-components";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 
 const ChatBox = styled.div``;
+const TextBox = styled.div``;
 
-const Chat = () => {
+interface ChatProps {
+  className: string;
+}
+
+const Chat: React.FC<ChatProps> = ({ className }) => {
   const [animationParent] = useAutoAnimate();
   const [newMessage, setNewMessage] = useState("");
   const [messages, setMessages] = useState<IMessage[]>([]);
@@ -96,17 +101,17 @@ const Chat = () => {
   }, []);
 
   return (
-    <>
+    <div className={className}>
       <ChatBox
         ref={animationParent}
-        className="messages px-4 rounded-xl border overflow-scroll max-h-[60vh] no-scrollbar"
+        className="messages px-4 rounded-xl border overflow-scroll no-scrollbar"
       >
         {messages.map((message) => (
           <Message message={message} key={message.id} />
         ))}
         <div ref={messagesEndRef} />
       </ChatBox>
-      <div>
+      <TextBox>
         <form
           onSubmit={(e) => {
             e.preventDefault();
@@ -135,8 +140,8 @@ const Chat = () => {
             💬
           </button>
         </form>
-      </div>
-    </>
+      </TextBox>
+    </div>
   );
 };
 

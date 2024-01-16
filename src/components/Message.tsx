@@ -6,20 +6,21 @@ import { IMessage } from "../types/message";
 dayjs.extend(relativeTime);
 
 const Message = ({ message }: { message: IMessage }) => {
-  const { currentUser } = userStore()
+  const { currentUser } = userStore();
   return (
     <div
-      className={`chat py-4 ${message.users.id === currentUser?.user?.id
-        ? "chat-end"
-        : "chat-start"
-        }`}
+      className={`chat py-3 ${
+        message.users.id === currentUser?.user?.id ? "chat-end" : "chat-start"
+      }`}
     >
       <div className="chat-image avatar">
         <div className="w-14 rounded-full border-2 border-neutral">
           <img
-            src={`https://api.dicebear.com/7.x/notionists/svg?seed=${message.users.id
-              }a&scale=150${message.users.id === currentUser?.user?.id ? "&flip=true" : ""
-              }`}
+            src={`https://api.dicebear.com/7.x/notionists/svg?seed=${
+              message.users.id
+            }a&scale=150${
+              message.users.id === currentUser?.user?.id ? "&flip=true" : ""
+            }`}
             alt="avatar"
             className="mt-1"
           />
@@ -32,10 +33,11 @@ const Message = ({ message }: { message: IMessage }) => {
         </time>
       </div>
       <div
-        className={`chat-bubble ${message.users.id === currentUser?.user?.id
-          ? "chat-bubble-primary"
-          : ""
-          }`}
+        className={`chat-bubble p-2 min-h-0 ${
+          message.users.id === currentUser?.user?.id
+            ? "chat-bubble-primary text-right"
+            : "text-left"
+        }`}
       >
         {message.text}
       </div>

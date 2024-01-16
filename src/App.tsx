@@ -3,17 +3,25 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.min.css";
 import Chat from "./components/Chat";
 import Login from "./components/Login";
+import styled from "styled-components";
+import { useAutoAnimate } from "@formkit/auto-animate/react";
+
+const MainWrapper = styled.div``;
 
 function App() {
+  const [animationParent] = useAutoAnimate();
   return (
-    <>
-      <ToastContainer />
-      <h1 className="font-serif font-black text-7xl italic tracking-tight mb-4">
+    <MainWrapper
+      ref={animationParent}
+      className="overflow-hidden h-[100vh] p-2 flex flex-col justify-between "
+    >
+      <h1 className="font-serif font-black text-5xl italic tracking-tight pb-4 ">
         SupaChat
       </h1>
-      <Chat />
-      <Login />
-    </>
+      <ToastContainer />
+      <Chat className="flex flex-col  h-0 flex-grow" />
+      <Login className="" />
+    </MainWrapper>
   );
 }
 
