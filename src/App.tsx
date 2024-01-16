@@ -3,10 +3,8 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.min.css";
 import Chat from "./components/Chat";
 import Login from "./components/Login";
-import { useAutoAnimate } from "@formkit/auto-animate/react";
 
 function App() {
-  const [animationParent] = useAutoAnimate({ duration: 200 });
   return (
     <>
       <ToastContainer />
@@ -14,7 +12,7 @@ function App() {
         SupaChat
       </h1>
       <Chat />
-      <Login ref={animationParent} />
+      <Login />
     </>
   );
 }
