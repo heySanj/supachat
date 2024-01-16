@@ -15,7 +15,7 @@ const Message = ({ message }: { message: IMessage }) => {
         }`}
     >
       <div className="chat-image avatar">
-        <div className="w-16 rounded-full border-2 border-neutral">
+        <div className="w-14 rounded-full border-2 border-neutral">
           <img
             src={`https://api.dicebear.com/7.x/notionists/svg?seed=${message.users.id
               }a&scale=150${message.users.id === currentUser?.user?.id ? "&flip=true" : ""
@@ -25,7 +25,7 @@ const Message = ({ message }: { message: IMessage }) => {
           />
         </div>
       </div>
-      <div className="chat-header self-end pb-2 font-black">
+      <div className="chat-header self-end pb-1 font-black">
         @{message.users.userName}
         <time className="text-xs opacity-70 font-normal">
           - {dayjs(message.created_at).fromNow()}
@@ -33,7 +33,7 @@ const Message = ({ message }: { message: IMessage }) => {
       </div>
       <div
         className={`chat-bubble ${message.users.id === currentUser?.user?.id
-          ? "chat-bubble-secondary"
+          ? "chat-bubble-primary"
           : ""
           }`}
       >

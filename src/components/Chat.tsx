@@ -1,27 +1,40 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import supabase from "../supabaseClient";
 import { userStore } from "../store/store";
 import Message from "./Message";
 import { IMessage } from "../types/message";
+import styled from "styled-components";
+import { useAutoAnimate } from "@formkit/auto-animate/react";
+
+const ChatBox = styled.div``;
 
 const Chat = () => {
+  const [animationParent] = useAutoAnimate();
   const [newMessage, setNewMessage] = useState("");
   const [messages, setMessages] = useState<IMessage[]>([]);
 
   const { currentUser } = userStore();
 
+  const messagesEndRef = useRef<null | HTMLDivElement>(null);
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
+
   const sendMessage = async () => {
     const { error } = await supabase
-      .from('messages')
-      .insert([
-        { text: newMessage, user: currentUser?.user.id },
-      ])
-      .select()
+      .from("messages")
+      .insert([{ text: newMessage, user: currentUser?.user.id }])
+      .select();
 
     if (error) {
-      throw new Error(error.message)
+      throw new Error(error.message);
     }
-    setNewMessage('')
+    setNewMessage("");
   };
 
   const fetchMessages = async () => {
@@ -49,23 +62,26 @@ const Chat = () => {
         async (payload) => {
           const { eventType } = payload;
           if (eventType === "INSERT") {
-            const newMessage: IMessage = payload.new as IMessage
+            const newMessage: IMessage = payload.new as IMessage;
             // Need to get user details first before pusing the new message
-            const { data, error } = await supabase.from('users')
-              .select('*')
-              .eq('id', newMessage.user)
+            const { data, error } = await supabase
+              .from("users")
+              .select("*")
+              .eq("id", newMessage.user)
               .limit(1)
-              .single()
+              .single();
             if (!data || error) {
-              throw new Error(error.message)
+              throw new Error(error.message);
             } else {
-              newMessage.users = data
+              newMessage.users = data;
             }
             setMessages((prev) => [...prev, newMessage]);
           }
-          if (eventType === 'DELETE') {
+          if (eventType === "DELETE") {
             console.log("### DELETE", payload);
-            setMessages((prev) => prev.filter(message => message.id !== payload.old.id));
+            setMessages((prev) =>
+              prev.filter((message) => message.id !== payload.old.id)
+            );
           }
         }
       )
@@ -81,11 +97,15 @@ const Chat = () => {
 
   return (
     <>
-      <div className="messages px-4 rounded-xl border">
+      <ChatBox
+        ref={animationParent}
+        className="messages px-4 rounded-xl border overflow-scroll max-h-[60vh] no-scrollbar"
+      >
         {messages.map((message) => (
           <Message message={message} key={message.id} />
         ))}
-      </div>
+        <div ref={messagesEndRef} />
+      </ChatBox>
       <div>
         <form
           onSubmit={(e) => {
@@ -96,9 +116,11 @@ const Chat = () => {
         >
           <input
             disabled={!currentUser}
-            placeholder={currentUser
-              ? `Message as ${currentUser.user.user_metadata.display_name}`
-              : "Login to send messages"}
+            placeholder={
+              currentUser
+                ? `Message as ${currentUser.user.user_metadata.display_name}`
+                : "Login to send messages"
+            }
             type="text"
             value={newMessage}
             onChange={(e) => setNewMessage(e.target.value)}
@@ -107,8 +129,11 @@ const Chat = () => {
 
           <button
             type="submit"
-            className="btn btn-secondary text-2xl"
-            disabled={!currentUser}>💬</button>
+            className="btn btn-primary text-2xl"
+            disabled={!currentUser}
+          >
+            💬
+          </button>
         </form>
       </div>
     </>
